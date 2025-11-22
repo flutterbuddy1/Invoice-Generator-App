@@ -26,6 +26,24 @@ class Invoice extends HiveObject {
   @HiveField(6)
   List<InvoiceItem> items;
 
+  @HiveField(7)
+  String customerGSTIN;
+
+  @HiveField(8)
+  bool isIGST;
+
+  @HiveField(9)
+  String transportMode;
+
+  @HiveField(10)
+  String vehicleNumber;
+
+  @HiveField(11)
+  String termsOfPayment;
+
+  @HiveField(12)
+  String termsOfDelivery;
+
   Invoice({
     required this.id,
     required this.invoiceNumber,
@@ -34,6 +52,12 @@ class Invoice extends HiveObject {
     required this.clientName,
     required this.clientAddress,
     required this.items,
+    this.customerGSTIN = '',
+    this.isIGST = false,
+    this.transportMode = '',
+    this.vehicleNumber = '',
+    this.termsOfPayment = '',
+    this.termsOfDelivery = '',
   });
 
   double get totalAmount {

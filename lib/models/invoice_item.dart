@@ -16,11 +16,15 @@ class InvoiceItem extends HiveObject {
   @HiveField(3)
   double gstRate; // Percentage, e.g., 18.0
 
+  @HiveField(4)
+  String hsnCode;
+
   InvoiceItem({
     required this.description,
     required this.quantity,
     required this.unitPrice,
     this.gstRate = 0.0,
+    this.hsnCode = '',
   });
 
   double get total => (quantity * unitPrice) * (1 + gstRate / 100);

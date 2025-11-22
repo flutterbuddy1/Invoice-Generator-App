@@ -112,6 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Edit Business Profile'),
         actions: [
@@ -125,115 +126,221 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo
+              // Logo Section
               Center(
-                child: GestureDetector(
-                  onTap: () => _pickImage(true),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey.shade200,
-                        backgroundImage: _logoPath != null
-                            ? FileImage(File(_logoPath!))
-                            : null,
-                        child: _logoPath == null
-                            ? const Icon(
-                                Icons.add_a_photo,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : null,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: _logoPath != null
+                          ? FileImage(File(_logoPath!))
+                          : null,
+                      child: _logoPath == null
+                          ? const Icon(
+                              Icons.business,
+                              size: 40,
+                              color: Colors.grey,
+                            )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.camera_alt,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => _pickImage(true),
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      const Text('Logo'),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
-                'Basic Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Business Name'),
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
-                maxLines: 3,
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _gstinController,
-                decoration: const InputDecoration(labelText: 'GSTIN'),
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone'),
-                keyboardType: TextInputType.phone,
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-
-              const SizedBox(height: 32),
-              const Text(
-                'Bank Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _bankNameController,
-                decoration: const InputDecoration(labelText: 'Bank Name'),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _accountNumberController,
-                decoration: const InputDecoration(labelText: 'Account Number'),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _ifscController,
-                decoration: const InputDecoration(labelText: 'IFSC Code'),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _branchController,
-                decoration: const InputDecoration(labelText: 'Branch Name'),
-              ),
-
-              const SizedBox(height: 32),
-              const Text(
-                'Signature',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () => _pickImage(false),
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
+              // Basic Details Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Basic Details',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Business Name',
+                          prefixIcon: Icon(Icons.store),
+                        ),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _addressController,
+                        decoration: const InputDecoration(
+                          labelText: 'Address',
+                          prefixIcon: Icon(Icons.location_on),
+                        ),
+                        maxLines: 3,
+                        validator: (value) =>
+                            value!.isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _gstinController,
+                        decoration: const InputDecoration(
+                          labelText: 'GSTIN',
+                          prefixIcon: Icon(Icons.numbers),
+                        ),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) =>
+                            value!.isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone',
+                          prefixIcon: Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) =>
+                            value!.isEmpty ? 'Required' : null,
+                      ),
+                    ],
                   ),
-                  child: _signaturePath != null
-                      ? Image.file(File(_signaturePath!), fit: BoxFit.contain)
-                      : const Center(child: Text('Tap to upload Signature')),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Bank Details Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bank Details',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _bankNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Bank Name',
+                          prefixIcon: Icon(Icons.account_balance),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _accountNumberController,
+                        decoration: const InputDecoration(
+                          labelText: 'Account Number',
+                          prefixIcon: Icon(Icons.numbers),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _ifscController,
+                              decoration: const InputDecoration(
+                                labelText: 'IFSC Code',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _branchController,
+                              decoration: const InputDecoration(
+                                labelText: 'Branch Name',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Signature Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Signature',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () => _pickImage(false),
+                        child: Container(
+                          height: 120,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade50,
+                          ),
+                          child: _signaturePath != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(
+                                    File(_signaturePath!),
+                                    fit: BoxFit.contain,
+                                  ),
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file,
+                                      size: 32,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Tap to upload Signature',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),

@@ -24,13 +24,19 @@ class InvoiceAdapter extends TypeAdapter<Invoice> {
       clientName: fields[4] as String,
       clientAddress: fields[5] as String,
       items: (fields[6] as List).cast<InvoiceItem>(),
+      customerGSTIN: fields[7] as String,
+      isIGST: fields[8] as bool,
+      transportMode: fields[9] as String,
+      vehicleNumber: fields[10] as String,
+      termsOfPayment: fields[11] as String,
+      termsOfDelivery: fields[12] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Invoice obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +50,19 @@ class InvoiceAdapter extends TypeAdapter<Invoice> {
       ..writeByte(5)
       ..write(obj.clientAddress)
       ..writeByte(6)
-      ..write(obj.items);
+      ..write(obj.items)
+      ..writeByte(7)
+      ..write(obj.customerGSTIN)
+      ..writeByte(8)
+      ..write(obj.isIGST)
+      ..writeByte(9)
+      ..write(obj.transportMode)
+      ..writeByte(10)
+      ..write(obj.vehicleNumber)
+      ..writeByte(11)
+      ..write(obj.termsOfPayment)
+      ..writeByte(12)
+      ..write(obj.termsOfDelivery);
   }
 
   @override
