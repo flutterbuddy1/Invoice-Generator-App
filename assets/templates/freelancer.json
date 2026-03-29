@@ -1,0 +1,42 @@
+{
+  "id": "freelancer",
+  "name": "Freelancer / Creative",
+  "description": "Clean and modern design for freelancers and creative professionals.",
+  "styles": {
+    "primaryColor": "00796B",
+    "secondaryColor": "B2DFDB",
+    "textColor": "212121",
+    "tableHeaderColor": "00796B",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "E0F2F1",
+    "footerBackgroundColor": "F5F5F5",
+    "borderColor": "BDBDBD"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": true,
+    "showCustomerGstin": false,
+    "showHsn": false,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "INVOICE",
+    "businessDetails": "Freelancer Details",
+    "consigneeDetailsTitle": "BILL TO",
+    "invoiceNo": "Invoice #",
+    "dated": "Date of Issue",
+    "termsOfPayment": "Payment Terms",
+    "dueDate": "Due Date",
+    "tableDescription": "Service Description",
+    "tableHsn": "Code",
+    "tableQty": "Hours/Qty",
+    "tableRate": "Rate",
+    "tableTotal": "Subtotal",
+    "totalAmount": "Total Amount",
+    "amountInWords": "Total in words:",
+    "declaration": "Notes:",
+    "bankDetails": "Payment Info:",
+    "authorizedSignatory": "Signature"
+  }
+}

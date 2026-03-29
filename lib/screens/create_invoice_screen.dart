@@ -5,6 +5,8 @@ import 'package:uuid/uuid.dart';
 import '../models/invoice.dart';
 import '../models/invoice_item.dart';
 import '../providers/invoice_provider.dart';
+import '../providers/template_provider.dart';
+import '../services/ad_service.dart';
 
 class CreateInvoiceScreen extends StatefulWidget {
   final Invoice? invoice;
@@ -22,6 +24,8 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
   // Controllers
   final _clientNameController = TextEditingController();
   final _clientAddressController = TextEditingController();
+  final _clientPhoneController = TextEditingController();
+  final _clientEmailController = TextEditingController();
   final _customerGstinController = TextEditingController();
 
   final _invoiceNumberController = TextEditingController();
@@ -58,6 +62,8 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
     final inv = widget.invoice!;
     _clientNameController.text = inv.clientName;
     _clientAddressController.text = inv.clientAddress;
+    _clientPhoneController.text = inv.clientPhone;
+    _clientEmailController.text = inv.clientEmail;
     _customerGstinController.text = inv.customerGSTIN;
     _invoiceNumberController.text = inv.invoiceNumber;
     _transportModeController.text = inv.transportMode;
@@ -132,6 +138,8 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
       dueDate: _dueDate,
       clientName: _clientNameController.text,
       clientAddress: _clientAddressController.text,
+      clientPhone: _clientPhoneController.text,
+      clientEmail: _clientEmailController.text,
       customerGSTIN: _customerGstinController.text,
       isIGST: _isIGST,
       transportMode: _transportModeController.text,
@@ -149,6 +157,10 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
     } else {
       Provider.of<InvoiceProvider>(context, listen: false).addInvoice(invoice);
     }
+    
+    // Show high-engagement interstitial ad after saving
+    AdService().showInterstitialAd();
+    
     Navigator.of(context).pop();
   }
 
@@ -227,6 +239,24 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
+                    controller: _clientPhoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Client Phone (WhatsApp)',
+                      prefixIcon: Icon(Icons.phone),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _clientEmailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Client Email',
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
                     controller: _customerGstinController,
                     decoration: const InputDecoration(
                       labelText: 'Customer GSTIN',
@@ -239,63 +269,89 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
             ),
             Step(
               title: const Text('Details'),
-              content: Column(
-                children: [
-                  TextFormField(
-                    controller: _invoiceNumberController,
-                    decoration: const InputDecoration(labelText: 'Invoice #'),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
+              content: Consumer<TemplateProvider>(
+                builder: (context, templateProvider, _) {
+                  final features = templateProvider.currentFeatures;
+                  return Column(
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => _selectDate(context, false),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Date',
-                              prefixIcon: Icon(Icons.calendar_today),
-                            ),
-                            child: Text(DateFormat('dd/MM/yyyy').format(_date)),
-                          ),
+                      TextFormField(
+                        controller: _invoiceNumberController,
+                        decoration: const InputDecoration(
+                          labelText: 'Invoice #',
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => _selectDate(context, true),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Due Date',
-                              prefixIcon: Icon(Icons.event),
-                            ),
-                            child: Text(
-                              DateFormat('dd/MM/yyyy').format(_dueDate),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => _selectDate(context, false),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: 'Date',
+                                  prefixIcon: Icon(Icons.calendar_today),
+                                ),
+                                child: Text(
+                                  DateFormat('dd/MM/yyyy').format(_date),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          if (features['showDueDate'] ?? true) ...[
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => _selectDate(context, true),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Due Date',
+                                    prefixIcon: Icon(Icons.event),
+                                  ),
+                                  child: Text(
+                                    DateFormat('dd/MM/yyyy').format(_dueDate),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
+                      if (features['showGst'] ?? true) ...[
+                        const SizedBox(height: 16),
+                        SwitchListTile(
+                          title: const Text('Inter-state Supply (IGST)'),
+                          value: _isIGST,
+                          onChanged: (val) => setState(() => _isIGST = val),
+                        ),
+                      ],
+                      if (features['showTransportFields'] ?? true) ...[
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _transportModeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Transport Mode',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _vehicleNumberController,
+                          decoration: const InputDecoration(
+                            labelText: 'Vehicle No.',
+                          ),
+                        ),
+                      ],
+                      if (features['showPaymentTerms'] ?? true) ...[
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _termsPaymentController,
+                          decoration: const InputDecoration(
+                            labelText: 'Terms of Payment',
+                          ),
+                        ),
+                      ],
                     ],
-                  ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Inter-state Supply (IGST)'),
-                    value: _isIGST,
-                    onChanged: (val) => setState(() => _isIGST = val),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _transportModeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Transport Mode',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _vehicleNumberController,
-                    decoration: const InputDecoration(labelText: 'Vehicle No.'),
-                  ),
-                ],
+                  );
+                },
               ),
               isActive: _currentStep >= 1,
             ),
@@ -306,71 +362,88 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _itemDescController,
-                            decoration: const InputDecoration(
-                              labelText: 'Description',
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
+                      child: Consumer<TemplateProvider>(
+                        builder: (context, templateProvider, _) {
+                          final features = templateProvider.currentFeatures;
+                          return Column(
                             children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _itemHsnController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'HSN',
-                                  ),
+                              TextFormField(
+                                controller: _itemDescController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Description',
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _itemQtyController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Qty',
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  if (features['showHsn'] ?? true) ...[
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _itemHsnController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'HSN',
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                  ],
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _itemQtyController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Qty',
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
                                   ),
-                                  keyboardType: TextInputType.number,
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _itemPriceController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Price',
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                  if (features['showGst'] ?? true) ...[
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _itemGstController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'GST %',
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: _addItem,
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Add Item'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
+                                    foregroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.onSecondary,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _itemPriceController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Price',
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _itemGstController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'GST %',
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: _addItem,
-                              icon: const Icon(Icons.add),
-                              label: const Text('Add Item'),
-                            ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -425,25 +498,35 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                   ),
                   _buildReviewRow('Total Items', _items.length.toString()),
                   const Divider(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total Amount',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Amount',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '₹${_items.fold(0.0, (sum, item) => sum + item.total).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                        Text(
+                          '₹${_items.fold(0.0, (sum, item) => sum + item.total).toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

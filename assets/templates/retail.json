@@ -1,0 +1,42 @@
+{
+    "id": "retail",
+    "name": "Retail / Shop Invoice",
+    "description": "Vibrant and clear invoice for retail shops.",
+    "styles": {
+        "primaryColor": "E65100",
+        "secondaryColor": "FFE0B2",
+        "textColor": "212121",
+        "tableHeaderColor": "E65100",
+        "tableHeaderTextColor": "FFFFFF",
+        "tableSubHeaderColor": "FFE0B2",
+        "footerBackgroundColor": "FFF3E0",
+        "borderColor": "E65100"
+    },
+    "features": {
+        "showTransportFields": false,
+        "showPaymentTerms": true,
+        "showCustomerGstin": false,
+        "showHsn": false,
+        "showGst": true,
+        "showDueDate": false
+    },
+    "labels": {
+        "title": "INVOICE",
+        "businessDetails": "Store Details",
+        "consigneeDetailsTitle": "CUSTOMER",
+        "invoiceNo": "Bill No.",
+        "dated": "Date",
+        "termsOfPayment": "Payment",
+        "dueDate": "Due",
+        "tableDescription": "Item Name",
+        "tableHsn": "HSN",
+        "tableQty": "Qty",
+        "tableRate": "Price",
+        "tableTotal": "Total",
+        "totalAmount": "Net Payable",
+        "amountInWords": "In Words:",
+        "declaration": "Thank you for shopping with us!",
+        "bankDetails": "Pay to:",
+        "authorizedSignatory": "Authorized Signatory"
+    }
+}

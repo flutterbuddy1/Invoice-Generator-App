@@ -1,4 +1,4 @@
-package com.example.invoice_generator
+package com.scaleaskill.invoiceapp
 
 import io.flutter.embedding.android.FlutterActivity
 

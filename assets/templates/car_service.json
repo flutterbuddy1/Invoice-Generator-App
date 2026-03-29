@@ -1,0 +1,42 @@
+{
+  "id": "car_service",
+  "name": "Car Service Invoice",
+  "description": "Professional invoice for automotive services.",
+  "styles": {
+    "primaryColor": "4A148C",
+    "secondaryColor": "E1BEE7",
+    "textColor": "000000",
+    "tableHeaderColor": "4A148C",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "E1BEE7",
+    "footerBackgroundColor": "EEEEEE",
+    "borderColor": "000000"
+  },
+  "features": {
+    "showTransportFields": true,
+    "showPaymentTerms": true,
+    "showCustomerGstin": true,
+    "showHsn": true,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "TAX INVOICE",
+    "businessDetails": "Service Center Details",
+    "consigneeDetailsTitle": "CUSTOMER DETAILS",
+    "invoiceNo": "Invoice No.",
+    "dated": "Date",
+    "termsOfPayment": "Payment Mode",
+    "dueDate": "Due Date",
+    "tableDescription": "Service / Part Description",
+    "tableHsn": "SAC/HSN",
+    "tableQty": "Qty",
+    "tableRate": "Rate",
+    "tableTotal": "Amount",
+    "totalAmount": "Grand Total",
+    "amountInWords": "Amount in words:",
+    "declaration": "Terms & Conditions:",
+    "bankDetails": "Bank Details:",
+    "authorizedSignatory": "For Service Center"
+  }
+}

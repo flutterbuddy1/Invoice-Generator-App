@@ -1,0 +1,42 @@
+{
+  "id": "law_firm",
+  "name": "Law Firm / Legal",
+  "description": "Formal and professional design for legal services.",
+  "styles": {
+    "primaryColor": "1A237E",
+    "secondaryColor": "C5CAE9",
+    "textColor": "000000",
+    "tableHeaderColor": "1A237E",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "E8EAF6",
+    "footerBackgroundColor": "FAFAFA",
+    "borderColor": "000000"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": true,
+    "showCustomerGstin": true,
+    "showHsn": false,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "FEE BILL",
+    "businessDetails": "Law Firm Details",
+    "consigneeDetailsTitle": "CLIENT DETAILS",
+    "invoiceNo": "Bill No.",
+    "dated": "Date",
+    "termsOfPayment": "Payment Method",
+    "dueDate": "Due Date",
+    "tableDescription": "Professional Services Rendered",
+    "tableHsn": "Ref",
+    "tableQty": "Units",
+    "tableRate": "Fee",
+    "tableTotal": "Amount",
+    "totalAmount": "Total Fees",
+    "amountInWords": "Amount in words:",
+    "declaration": "Professional Undertaking:",
+    "bankDetails": "Remittance Info:",
+    "authorizedSignatory": "Authorized Partner"
+  }
+}

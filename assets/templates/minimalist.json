@@ -1,0 +1,42 @@
+{
+  "id": "minimalist",
+  "name": "Minimalist / Basic",
+  "description": "Simple black and white design for a clean look.",
+  "styles": {
+    "primaryColor": "000000",
+    "secondaryColor": "EEEEEE",
+    "textColor": "000000",
+    "tableHeaderColor": "000000",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "F5F5F5",
+    "footerBackgroundColor": "FFFFFF",
+    "borderColor": "000000"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": true,
+    "showCustomerGstin": true,
+    "showHsn": true,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "INVOICE",
+    "businessDetails": "From",
+    "consigneeDetailsTitle": "To",
+    "invoiceNo": "Invoice No.",
+    "dated": "Date",
+    "termsOfPayment": "Terms",
+    "dueDate": "Due Date",
+    "tableDescription": "Item",
+    "tableHsn": "HSN",
+    "tableQty": "Qty",
+    "tableRate": "Price",
+    "tableTotal": "Total",
+    "totalAmount": "Total",
+    "amountInWords": "Amount in words:",
+    "declaration": "Terms:",
+    "bankDetails": "Bank:",
+    "authorizedSignatory": "Authorized"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "photography",
+  "name": "Photography / Studio",
+  "description": "Elegant design for photography and production studios.",
+  "styles": {
+    "primaryColor": "263238",
+    "secondaryColor": "CFD8DC",
+    "textColor": "263238",
+    "tableHeaderColor": "263238",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "ECEFF1",
+    "footerBackgroundColor": "F5F5F5",
+    "borderColor": "455A64"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": true,
+    "showCustomerGstin": false,
+    "showHsn": false,
+    "showGst": true,
+    "showDueDate": false
+  },
+  "labels": {
+    "title": "PHOTO INVOICE",
+    "businessDetails": "Studio Details",
+    "consigneeDetailsTitle": "CLIENT",
+    "invoiceNo": "Invoice #",
+    "dated": "Shoot Date",
+    "termsOfPayment": "Payment Status",
+    "dueDate": "Payment Due",
+    "tableDescription": "Package / Service / Prints",
+    "tableHsn": "Item ID",
+    "tableQty": "Qty",
+    "tableRate": "Price",
+    "tableTotal": "Total",
+    "totalAmount": "Balance Due",
+    "amountInWords": "Total in words:",
+    "declaration": "Copyright Notice:",
+    "bankDetails": "Pay Via:",
+    "authorizedSignatory": "Photographer"
+  }
+}

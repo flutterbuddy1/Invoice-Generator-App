@@ -1,0 +1,42 @@
+{
+  "id": "education",
+  "name": "Education / Tutoring",
+  "description": "Friendly and clear design for schools, tutors, and coaching centers.",
+  "styles": {
+    "primaryColor": "1565C0",
+    "secondaryColor": "BBDEFB",
+    "textColor": "0D47A1",
+    "tableHeaderColor": "1565C0",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "E3F2FD",
+    "footerBackgroundColor": "FAFAFA",
+    "borderColor": "90CAF9"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": false,
+    "showCustomerGstin": false,
+    "showHsn": false,
+    "showGst": false,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "FEE RECEIPT",
+    "businessDetails": "Institution Details",
+    "consigneeDetailsTitle": "STUDENT DETAILS",
+    "invoiceNo": "Receipt No.",
+    "dated": "Date",
+    "termsOfPayment": "Payment Mode",
+    "dueDate": "Valid Till",
+    "tableDescription": "Particulars / Fee Head",
+    "tableHsn": "ID",
+    "tableQty": "Months",
+    "tableRate": "Fee Rate",
+    "tableTotal": "Total",
+    "totalAmount": "Total Fees",
+    "amountInWords": "Rupees in words:",
+    "declaration": "Note:",
+    "bankDetails": "Payment Link/Ref:",
+    "authorizedSignatory": "Principal/Admin"
+  }
+}

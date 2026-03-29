@@ -1,0 +1,42 @@
+{
+  "id": "marketing",
+  "name": "Marketing / Agency",
+  "description": "Bold and stylish design for agencies and marketing firms.",
+  "styles": {
+    "primaryColor": "311B92",
+    "secondaryColor": "D1C4E9",
+    "textColor": "311B92",
+    "tableHeaderColor": "311B92",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "EDE7F6",
+    "footerBackgroundColor": "F3F0FA",
+    "borderColor": "512DA8"
+  },
+  "features": {
+    "showTransportFields": false,
+    "showPaymentTerms": true,
+    "showCustomerGstin": true,
+    "showHsn": false,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "SERVICE INVOICE",
+    "businessDetails": "Agency Details",
+    "consigneeDetailsTitle": "PREPARED FOR",
+    "invoiceNo": "Invoice #",
+    "dated": "Date",
+    "termsOfPayment": "Project Phase",
+    "dueDate": "Deadline",
+    "tableDescription": "Campaign / Creative Services",
+    "tableHsn": "ID",
+    "tableQty": "Units/Hrs",
+    "tableRate": "Rate",
+    "tableTotal": "Total",
+    "totalAmount": "Total Investment",
+    "amountInWords": "Total in words:",
+    "declaration": "Project Notes:",
+    "bankDetails": "Payment Link:",
+    "authorizedSignatory": "Account Director"
+  }
+}

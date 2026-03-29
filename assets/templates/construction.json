@@ -1,0 +1,42 @@
+{
+  "id": "construction",
+  "name": "Construction / Contractor",
+  "description": "Rugged and detailed design for contractors and construction firms.",
+  "styles": {
+    "primaryColor": "E65100",
+    "secondaryColor": "FFE0B2",
+    "textColor": "212121",
+    "tableHeaderColor": "E65100",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "FFF3E0",
+    "footerBackgroundColor": "F5F5F5",
+    "borderColor": "BF360C"
+  },
+  "features": {
+    "showTransportFields": true,
+    "showPaymentTerms": true,
+    "showCustomerGstin": true,
+    "showHsn": true,
+    "showGst": true,
+    "showDueDate": true
+  },
+  "labels": {
+    "title": "CONTRACT INVOICE",
+    "businessDetails": "Contractor Details",
+    "consigneeDetailsTitle": "SITE ADDRESS / BILL TO",
+    "invoiceNo": "Invoice No.",
+    "dated": "Billing Date",
+    "termsOfPayment": "Work Status",
+    "dueDate": "Payment Due By",
+    "tableDescription": "Description of Work / Materials",
+    "tableHsn": "HSN/SAC",
+    "tableQty": "Qty/Unit",
+    "tableRate": "Rate",
+    "tableTotal": "Total",
+    "totalAmount": "Total Payable",
+    "amountInWords": "Amount in words:",
+    "declaration": "Work Completion Note:",
+    "bankDetails": "Banking Details:",
+    "authorizedSignatory": "Authorized Representative"
+  }
+}

@@ -6,13 +6,17 @@ import 'package:intl/intl.dart';
 
 import '../models/business_profile.dart';
 import '../models/invoice.dart';
+import '../models/template.dart';
 import 'number_to_words.dart';
 
 class PdfGenerator {
   static Future<Uint8List> generate(
     Invoice invoice,
-    BusinessProfile profile,
-  ) async {
+    BusinessProfile profile, {
+    required TemplateStyles styles,
+    required TemplateLabels labels,
+    required Map<String, bool> features,
+  }) async {
     final pdf = pw.Document();
     try {
       final image = _tryLoadImage(profile.logoPath);
@@ -29,11 +33,25 @@ class PdfGenerator {
           theme: pw.ThemeData.withFont(base: font, bold: boldFont),
           build: (pw.Context context) {
             return [
-              _buildTitle(),
-              _buildHeaderSection(invoice, profile, image),
-              _buildConsigneeSection(invoice),
-              _buildItemsTable(invoice),
-              _buildFooterSection(invoice, profile, signature),
+              _buildTitle(styles, labels),
+              _buildHeaderSection(
+                invoice,
+                profile,
+                image,
+                styles,
+                labels,
+                features,
+              ),
+              _buildConsigneeSection(invoice, styles, labels, features),
+              _buildItemsTable(invoice, styles, labels, features),
+              _buildFooterSection(
+                invoice,
+                profile,
+                signature,
+                styles,
+                labels,
+                features,
+              ),
             ];
           },
         ),
@@ -46,6 +64,76 @@ class PdfGenerator {
         pw.Page(
           build: (context) =>
               pw.Center(child: pw.Text('Error generating PDF: $e')),
+        ),
+      );
+      return errorPdf.save();
+    }
+  }
+
+  /// Generate a single PDF document containing multiple invoices
+  /// Invoices will be sorted by date (oldest first)
+  static Future<Uint8List> generateMultiple(
+    List<Invoice> invoices,
+    BusinessProfile profile, {
+    required TemplateStyles styles,
+    required TemplateLabels labels,
+    required Map<String, bool> features,
+  }) async {
+    final pdf = pw.Document();
+
+    try {
+      // Sort invoices by date (oldest first)
+      final sortedInvoices = List<Invoice>.from(invoices)
+        ..sort((a, b) => a.date.compareTo(b.date));
+
+      final image = _tryLoadImage(profile.logoPath);
+      final signature = _tryLoadImage(profile.signaturePath);
+
+      // Use standard fonts
+      final font = pw.Font.helvetica();
+      final boldFont = pw.Font.helveticaBold();
+
+      // Add each invoice as separate pages
+      for (final invoice in sortedInvoices) {
+        pdf.addPage(
+          pw.MultiPage(
+            margin: pw.EdgeInsets.all(30),
+            pageFormat: PdfPageFormat.a4,
+            theme: pw.ThemeData.withFont(base: font, bold: boldFont),
+            build: (pw.Context context) {
+              return [
+                _buildTitle(styles, labels),
+                _buildHeaderSection(
+                  invoice,
+                  profile,
+                  image,
+                  styles,
+                  labels,
+                  features,
+                ),
+                _buildConsigneeSection(invoice, styles, labels, features),
+                _buildItemsTable(invoice, styles, labels, features),
+                _buildFooterSection(
+                  invoice,
+                  profile,
+                  signature,
+                  styles,
+                  labels,
+                  features,
+                ),
+              ];
+            },
+          ),
+        );
+      }
+
+      return pdf.save();
+    } catch (e) {
+      final errorPdf = pw.Document();
+      errorPdf.addPage(
+        pw.Page(
+          build: (context) =>
+              pw.Center(child: pw.Text('Error generating merged PDF: $e')),
         ),
       );
       return errorPdf.save();
@@ -66,15 +154,23 @@ class PdfGenerator {
     return null;
   }
 
-  static pw.Widget _buildTitle() {
+  static pw.Widget _buildTitle(TemplateStyles styles, TemplateLabels labels) {
     return pw.Container(
       width: double.infinity,
       alignment: pw.Alignment.center,
       padding: const pw.EdgeInsets.all(5),
-      decoration: pw.BoxDecoration(border: pw.Border.all()),
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(
+          color: PdfColor.fromInt(styles.borderColor.value),
+        ),
+      ),
       child: pw.Text(
-        'ESTIMATE',
-        style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+        labels.title,
+        style: pw.TextStyle(
+          fontWeight: pw.FontWeight.bold,
+          fontSize: 16,
+          color: PdfColor.fromInt(styles.textColor.value),
+        ),
       ),
     );
   }
@@ -83,6 +179,9 @@ class PdfGenerator {
     Invoice invoice,
     BusinessProfile profile,
     pw.MemoryImage? image,
+    TemplateStyles styles,
+    TemplateLabels labels,
+    Map<String, bool> features,
   ) {
     return pw.Container(
       decoration: const pw.BoxDecoration(
@@ -122,13 +221,14 @@ class PdfGenerator {
                     style: const pw.TextStyle(fontSize: 10),
                   ),
                   pw.SizedBox(height: 5),
-                  pw.Text(
-                    'GSTIN: ${profile.gstin}',
-                    style: pw.TextStyle(
-                      fontWeight: pw.FontWeight.bold,
-                      fontSize: 10,
+                  if (features['showCustomerGstin'] ?? true)
+                    pw.Text(
+                      'GSTIN: ${profile.gstin}',
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        fontSize: 10,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -142,18 +242,28 @@ class PdfGenerator {
               ),
               child: pw.Column(
                 children: [
-                  _buildHeaderRow('Invoice No.', invoice.invoiceNumber),
                   _buildHeaderRow(
-                    'Dated',
+                    labels.invoiceNo,
+                    invoice.invoiceNumber,
+                    styles,
+                  ),
+                  _buildHeaderRow(
+                    labels.dated,
                     DateFormat('dd.MM.yyyy').format(invoice.date),
+                    styles,
                   ),
-                  _buildHeaderRow('Terms of Payment', invoice.termsOfPayment),
-                  _buildHeaderRow('Suppliers Ref.', ''),
-                  _buildHeaderRow('Other Reference(s)', ''),
-                  _buildHeaderRow(
-                    'Due Date',
-                    DateFormat('dd.MM.yyyy').format(invoice.dueDate),
-                  ),
+                  if (features['showPaymentTerms'] ?? true)
+                    _buildHeaderRow(
+                      labels.termsOfPayment,
+                      invoice.termsOfPayment,
+                      styles,
+                    ),
+                  if (features['showDueDate'] ?? true)
+                    _buildHeaderRow(
+                      labels.dueDate,
+                      DateFormat('dd.MM.yyyy').format(invoice.dueDate),
+                      styles,
+                    ),
                 ],
               ),
             ),
@@ -175,7 +285,11 @@ class PdfGenerator {
     );
   }
 
-  static pw.Widget _buildHeaderRow(String label, String value) {
+  static pw.Widget _buildHeaderRow(
+    String label,
+    String value,
+    TemplateStyles styles,
+  ) {
     return pw.Container(
       decoration: const pw.BoxDecoration(
         border: pw.Border(bottom: pw.BorderSide()),
@@ -210,7 +324,12 @@ class PdfGenerator {
     );
   }
 
-  static pw.Widget _buildConsigneeSection(Invoice invoice) {
+  static pw.Widget _buildConsigneeSection(
+    Invoice invoice,
+    TemplateStyles styles,
+    TemplateLabels labels,
+    Map<String, bool> features,
+  ) {
     return pw.Container(
       decoration: const pw.BoxDecoration(
         border: pw.Border(
@@ -234,7 +353,7 @@ class PdfGenerator {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'CONSIGNEE DETAILS',
+                    labels.consigneeDetailsTitle,
                     style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
                       fontStyle: pw.FontStyle.italic,
@@ -253,7 +372,8 @@ class PdfGenerator {
                     invoice.clientAddress,
                     style: const pw.TextStyle(fontSize: 10),
                   ),
-                  if (invoice.customerGSTIN.isNotEmpty)
+                  if ((features['showCustomerGstin'] ?? true) &&
+                      invoice.customerGSTIN.isNotEmpty)
                     pw.Text(
                       'GSTIN: ${invoice.customerGSTIN}',
                       style: pw.TextStyle(
@@ -266,67 +386,103 @@ class PdfGenerator {
             ),
           ),
           // Right: Transport Details
-          pw.Expanded(
-            flex: 1,
-            child: pw.Column(
-              children: [
-                _buildHeaderRow('Terms of Delivery', invoice.termsOfDelivery),
-                _buildHeaderRow('Buyer\'s Order No.', ''),
-                _buildHeaderRow('Transport Mode', invoice.transportMode),
-                _buildHeaderRow('Vehicle No.', invoice.vehicleNumber),
-              ],
+          if (features['showTransportFields'] ?? true)
+            pw.Expanded(
+              flex: 1,
+              child: pw.Column(
+                children: [
+                  _buildHeaderRow(
+                    'Terms of Delivery',
+                    invoice.termsOfDelivery,
+                    styles,
+                  ),
+                  _buildHeaderRow(
+                    'Transport Mode',
+                    invoice.transportMode,
+                    styles,
+                  ),
+                  _buildHeaderRow('Vehicle No.', invoice.vehicleNumber, styles),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  static pw.Widget _buildItemsTable(Invoice invoice) {
+  static pw.Widget _buildItemsTable(
+    Invoice invoice,
+    TemplateStyles styles,
+    TemplateLabels labels,
+    Map<String, bool> features,
+  ) {
+    final showHsn = features['showHsn'] ?? true;
+    final showGst = features['showGst'] ?? true;
+
+    // Dynamic column widths
+    final Map<int, pw.TableColumnWidth> columnWidths = {
+      0: const pw.FlexColumnWidth(3), // Desc
+    };
+
+    int colIndex = 1;
+    if (showHsn) columnWidths[colIndex++] = const pw.FlexColumnWidth(1); // HSN
+    columnWidths[colIndex++] = const pw.FlexColumnWidth(0.8); // Qty
+    columnWidths[colIndex++] = const pw.FlexColumnWidth(1.2); // Rate
+    columnWidths[colIndex++] = const pw.FlexColumnWidth(1.2); // Total (Base)
+
+    if (showGst) {
+      columnWidths[colIndex++] = const pw.FlexColumnWidth(1.5); // IGST
+      columnWidths[colIndex++] = const pw.FlexColumnWidth(1.5); // SGST
+      columnWidths[colIndex++] = const pw.FlexColumnWidth(1.5); // CGST
+    }
+
+    // Final Total Column
+    columnWidths[colIndex++] = const pw.FlexColumnWidth(1.5);
+
     return pw.Table(
       border: pw.TableBorder.all(width: 0.5),
-      columnWidths: {
-        0: const pw.FlexColumnWidth(3), // Desc
-        1: const pw.FlexColumnWidth(1), // HSN
-        2: const pw.FlexColumnWidth(0.8), // Qty
-        3: const pw.FlexColumnWidth(1.2), // Rate
-        4: const pw.FlexColumnWidth(1.2), // Total (Base)
-        5: const pw.FlexColumnWidth(1.5), // IGST
-        6: const pw.FlexColumnWidth(1.5), // SGST
-        7: const pw.FlexColumnWidth(1.5), // CGST
-        8: const pw.FlexColumnWidth(1.5), // Total Amount
-      },
+      columnWidths: columnWidths,
       children: [
         // Header Row 1 (Main Headers)
         pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColors.purple900),
+          decoration: pw.BoxDecoration(
+            color: PdfColor.fromInt(styles.tableHeaderColor.value),
+          ),
           children: [
-            _buildTableHeader('Description of Goods'),
-            _buildTableHeader('HSN Code'),
-            _buildTableHeader('Qty'),
-            _buildTableHeader('Unit Price'),
-            _buildTableHeader('Total'),
-            _buildTableHeader('IGST'),
-            _buildTableHeader('SGST'),
-            _buildTableHeader('CGST'),
-            _buildTableHeader('Total'),
+            _buildTableHeader(labels.tableDescription, styles),
+            if (showHsn) _buildTableHeader(labels.tableHsn, styles),
+            _buildTableHeader(labels.tableQty, styles),
+            _buildTableHeader(labels.tableRate, styles),
+            _buildTableHeader(
+              showGst ? 'Taxable Value' : labels.tableTotal,
+              styles,
+            ),
+            if (showGst) ...[
+              _buildTableHeader('IGST', styles),
+              _buildTableHeader('SGST', styles),
+              _buildTableHeader('CGST', styles),
+            ],
+            if (showGst) _buildTableHeader(labels.tableTotal, styles),
           ],
         ),
-        // Header Row 2 (Sub-headers for Taxes)
-        pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColors.purple100),
-          children: [
-            pw.Container(), // Desc
-            pw.Container(), // HSN
-            pw.Container(), // Qty
-            pw.Container(), // Rate
-            pw.Container(), // Total
-            _buildSubHeader('Rate | Amt'), // IGST
-            _buildSubHeader('Rate | Amt'), // SGST
-            _buildSubHeader('Rate | Amt'), // CGST
-            pw.Container(), // Total
-          ],
-        ),
+        // Header Row 2 (Sub-headers for Taxes) - Only if GST is enabled
+        if (showGst)
+          pw.TableRow(
+            decoration: pw.BoxDecoration(
+              color: PdfColor.fromInt(styles.tableSubHeaderColor.value),
+            ),
+            children: [
+              pw.Container(), // Desc
+              if (showHsn) pw.Container(), // HSN
+              pw.Container(), // Qty
+              pw.Container(), // Rate
+              pw.Container(), // Total
+              _buildSubHeader('Rate | Amt', styles), // IGST
+              _buildSubHeader('Rate | Amt', styles), // SGST
+              _buildSubHeader('Rate | Amt', styles), // CGST
+              pw.Container(), // Total
+            ],
+          ),
         // Data Rows
         ...invoice.items.map((item) {
           final baseTotal = item.quantity * item.unitPrice;
@@ -349,41 +505,48 @@ class PdfGenerator {
           return pw.TableRow(
             children: [
               _buildTableCell(item.description, align: pw.TextAlign.left),
-              _buildTableCell(item.hsnCode),
+              if (showHsn) _buildTableCell(item.hsnCode),
               _buildTableCell('${item.quantity}'),
               _buildTableCell(item.unitPrice.toStringAsFixed(2)),
               _buildTableCell(baseTotal.toStringAsFixed(2)),
-              _buildTableCell(
-                '${igstRate.toStringAsFixed(0)}% | ${igstAmt.toStringAsFixed(2)}',
-              ),
-              _buildTableCell(
-                '${sgstRate.toStringAsFixed(0)}% | ${sgstAmt.toStringAsFixed(2)}',
-              ),
-              _buildTableCell(
-                '${cgstRate.toStringAsFixed(0)}% | ${cgstAmt.toStringAsFixed(2)}',
-              ),
-              _buildTableCell(item.total.toStringAsFixed(2)),
+              if (showGst) ...[
+                _buildTableCell(
+                  '${igstRate.toStringAsFixed(0)}% | ${igstAmt.toStringAsFixed(2)}',
+                ),
+                _buildTableCell(
+                  '${sgstRate.toStringAsFixed(0)}% | ${sgstAmt.toStringAsFixed(2)}',
+                ),
+                _buildTableCell(
+                  '${cgstRate.toStringAsFixed(0)}% | ${cgstAmt.toStringAsFixed(2)}',
+                ),
+              ],
+              if (showGst) _buildTableCell(item.total.toStringAsFixed(2)),
             ],
           );
         }),
         // Empty rows filler
         for (int i = 0; i < (8 - invoice.items.length).clamp(0, 8); i++)
           pw.TableRow(
-            children: List.generate(9, (index) => pw.Container(height: 20)),
+            children: List.generate(
+              colIndex,
+              (index) => pw.Container(height: 20),
+            ),
           ),
         // Total Row
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.grey200),
+          decoration: pw.BoxDecoration(
+            color: PdfColor.fromInt(styles.footerBackgroundColor.value),
+          ),
           children: [
             _buildTableCell('Total', isBold: true),
-            pw.Container(),
+            if (showHsn) pw.Container(),
             _buildTableCell(
               invoice.items
                   .fold<int>(0, (sum, item) => sum + item.quantity)
                   .toString(),
               isBold: true,
             ),
-            pw.Container(),
+            pw.Container(), // Rate
             _buildTableCell(
               invoice.items
                   .fold<double>(
@@ -393,62 +556,65 @@ class PdfGenerator {
                   .toStringAsFixed(2),
               isBold: true,
             ),
-            _buildTableCell(
-              invoice.isIGST
-                  ? (invoice.totalAmount -
-                            invoice.items.fold<double>(
-                              0,
-                              (sum, item) =>
-                                  sum + (item.quantity * item.unitPrice),
-                            ))
-                        .toStringAsFixed(2)
-                  : '-',
-              isBold: true,
-            ),
-            _buildTableCell(
-              !invoice.isIGST
-                  ? ((invoice.totalAmount -
-                                invoice.items.fold<double>(
-                                  0,
-                                  (sum, item) =>
-                                      sum + (item.quantity * item.unitPrice),
-                                )) /
-                            2)
-                        .toStringAsFixed(2)
-                  : '-',
-              isBold: true,
-            ),
-            _buildTableCell(
-              !invoice.isIGST
-                  ? ((invoice.totalAmount -
-                                invoice.items.fold<double>(
-                                  0,
-                                  (sum, item) =>
-                                      sum + (item.quantity * item.unitPrice),
-                                )) /
-                            2)
-                        .toStringAsFixed(2)
-                  : '-',
-              isBold: true,
-            ),
-            _buildTableCell(
-              invoice.totalAmount.toStringAsFixed(2),
-              isBold: true,
-            ),
+            if (showGst) ...[
+              _buildTableCell(
+                invoice.isIGST
+                    ? (invoice.totalAmount -
+                              invoice.items.fold<double>(
+                                0,
+                                (sum, item) =>
+                                    sum + (item.quantity * item.unitPrice),
+                              ))
+                          .toStringAsFixed(2)
+                    : '-',
+                isBold: true,
+              ),
+              _buildTableCell(
+                !invoice.isIGST
+                    ? ((invoice.totalAmount -
+                                  invoice.items.fold<double>(
+                                    0,
+                                    (sum, item) =>
+                                        sum + (item.quantity * item.unitPrice),
+                                  )) /
+                              2)
+                          .toStringAsFixed(2)
+                    : '-',
+                isBold: true,
+              ),
+              _buildTableCell(
+                !invoice.isIGST
+                    ? ((invoice.totalAmount -
+                                  invoice.items.fold<double>(
+                                    0,
+                                    (sum, item) =>
+                                        sum + (item.quantity * item.unitPrice),
+                                  )) /
+                              2)
+                          .toStringAsFixed(2)
+                    : '-',
+                isBold: true,
+              ),
+            ],
+            if (showGst)
+              _buildTableCell(
+                invoice.totalAmount.toStringAsFixed(2),
+                isBold: true,
+              ),
           ],
         ),
       ],
     );
   }
 
-  static pw.Widget _buildTableHeader(String text) {
+  static pw.Widget _buildTableHeader(String text, TemplateStyles styles) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(2),
       alignment: pw.Alignment.center,
       child: pw.Text(
         text,
         style: pw.TextStyle(
-          color: PdfColors.white,
+          color: PdfColor.fromInt(styles.tableHeaderTextColor.value),
           fontWeight: pw.FontWeight.bold,
           fontSize: 8,
         ),
@@ -457,7 +623,7 @@ class PdfGenerator {
     );
   }
 
-  static pw.Widget _buildSubHeader(String text) {
+  static pw.Widget _buildSubHeader(String text, TemplateStyles styles) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(2),
       alignment: pw.Alignment.center,
@@ -491,6 +657,9 @@ class PdfGenerator {
     Invoice invoice,
     BusinessProfile profile,
     pw.MemoryImage? signature,
+    TemplateStyles styles,
+    TemplateLabels labels,
+    Map<String, bool> features,
   ) {
     final totalInWords = NumberToWords.convert(invoice.totalAmount.toInt());
     final baseTotal = invoice.items.fold<double>(
@@ -498,6 +667,7 @@ class PdfGenerator {
       (sum, item) => sum + (item.quantity * item.unitPrice),
     );
     final totalTax = invoice.totalAmount - baseTotal;
+    final showGst = features['showGst'] ?? true;
 
     return pw.Container(
       decoration: const pw.BoxDecoration(
@@ -522,7 +692,7 @@ class PdfGenerator {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'Amount Chargeable (in words):',
+                    labels.amountInWords,
                     style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
                       fontSize: 10,
@@ -534,7 +704,7 @@ class PdfGenerator {
                   ),
                   pw.SizedBox(height: 10),
                   pw.Text(
-                    'Declaration:',
+                    labels.declaration,
                     style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
                       fontSize: 10,
@@ -580,20 +750,33 @@ class PdfGenerator {
             flex: 4,
             child: pw.Column(
               children: [
-                _buildFooterRow('Total Amount', baseTotal.toStringAsFixed(2)),
-                if (invoice.isIGST)
-                  _buildFooterRow('Add: IGST', totalTax.toStringAsFixed(2))
-                else ...[
-                  _buildFooterRow(
-                    'Add: SGST',
-                    (totalTax / 2).toStringAsFixed(2),
-                  ),
-                  _buildFooterRow(
-                    'Add: CGST',
-                    (totalTax / 2).toStringAsFixed(2),
-                  ),
+                _buildFooterRow(
+                  labels
+                      .totalAmount, // Usually 'Total Amount' before tax or 'Sub Total'
+                  baseTotal.toStringAsFixed(2),
+                  styles,
+                ),
+                if (showGst) ...[
+                  if (invoice.isIGST)
+                    _buildFooterRow(
+                      'Add: IGST',
+                      totalTax.toStringAsFixed(2),
+                      styles,
+                    )
+                  else ...[
+                    _buildFooterRow(
+                      'Add: SGST',
+                      (totalTax / 2).toStringAsFixed(2),
+                      styles,
+                    ),
+                    _buildFooterRow(
+                      'Add: CGST',
+                      (totalTax / 2).toStringAsFixed(2),
+                      styles,
+                    ),
+                  ],
                 ],
-                _buildFooterRow('Round OFF', '-'),
+                _buildFooterRow('Round OFF', '-', styles),
                 pw.Container(
                   padding: const pw.EdgeInsets.all(5),
                   decoration: const pw.BoxDecoration(
@@ -641,7 +824,11 @@ class PdfGenerator {
     );
   }
 
-  static pw.Widget _buildFooterRow(String label, String value) {
+  static pw.Widget _buildFooterRow(
+    String label,
+    String value,
+    TemplateStyles styles,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(5),
       decoration: const pw.BoxDecoration(

@@ -1,0 +1,42 @@
+{
+  "id": "ecommerce",
+  "name": "E-commerce / Shop",
+  "description": "Modern design for online stores and digital products.",
+  "styles": {
+    "primaryColor": "880E4F",
+    "secondaryColor": "F8BBD0",
+    "textColor": "212121",
+    "tableHeaderColor": "880E4F",
+    "tableHeaderTextColor": "FFFFFF",
+    "tableSubHeaderColor": "FCE4EC",
+    "footerBackgroundColor": "FDF2F5",
+    "borderColor": "C2185B"
+  },
+  "features": {
+    "showTransportFields": true,
+    "showPaymentTerms": true,
+    "showCustomerGstin": false,
+    "showHsn": true,
+    "showGst": true,
+    "showDueDate": false
+  },
+  "labels": {
+    "title": "SALES INVOICE",
+    "businessDetails": "Shop Details",
+    "consigneeDetailsTitle": "SHIP TO",
+    "invoiceNo": "Order #",
+    "dated": "Order Date",
+    "termsOfPayment": "Payment Method",
+    "dueDate": "Ship Date",
+    "tableDescription": "Product / SKU",
+    "tableHsn": "SKU",
+    "tableQty": "Qty",
+    "tableRate": "Price",
+    "tableTotal": "Subtotal",
+    "totalAmount": "Total Paid",
+    "amountInWords": "Total in words:",
+    "declaration": "Return Policy:",
+    "bankDetails": "Transaction ID:",
+    "authorizedSignatory": "Store Manager"
+  }
+}

@@ -28,4 +28,26 @@ class InvoiceItem extends HiveObject {
   });
 
   double get total => (quantity * unitPrice) * (1 + gstRate / 100);
+
+  // JSON serialization for export
+  Map<String, dynamic> toJson() {
+    return {
+      'description': description,
+      'quantity': quantity,
+      'unitPrice': unitPrice,
+      'gstRate': gstRate,
+      'hsnCode': hsnCode,
+      'total': total,
+    };
+  }
+
+  factory InvoiceItem.fromJson(Map<String, dynamic> json) {
+    return InvoiceItem(
+      description: json['description'] as String,
+      quantity: json['quantity'] as int,
+      unitPrice: (json['unitPrice'] as num).toDouble(),
+      gstRate: (json['gstRate'] as num?)?.toDouble() ?? 0.0,
+      hsnCode: json['hsnCode'] as String? ?? '',
+    );
+  }
 }

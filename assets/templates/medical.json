@@ -1,0 +1,42 @@
+{
+    "id": "medical",
+    "name": "Medical / Clinic",
+    "description": "Clean and trustworthy invoice for medical services.",
+    "styles": {
+        "primaryColor": "00695C",
+        "secondaryColor": "B2DFDB",
+        "textColor": "004D40",
+        "tableHeaderColor": "00796B",
+        "tableHeaderTextColor": "FFFFFF",
+        "tableSubHeaderColor": "B2DFDB",
+        "footerBackgroundColor": "E0F2F1",
+        "borderColor": "00897B"
+    },
+    "features": {
+        "showTransportFields": false,
+        "showPaymentTerms": false,
+        "showCustomerGstin": false,
+        "showHsn": false,
+        "showGst": false,
+        "showDueDate": true
+    },
+    "labels": {
+        "title": "MEDICAL RECEIPT",
+        "businessDetails": "Clinic / Hospital",
+        "consigneeDetailsTitle": "PATIENT DETAILS",
+        "invoiceNo": "Receipt No.",
+        "dated": "Date",
+        "termsOfPayment": "Mode",
+        "dueDate": "Next Visit",
+        "tableDescription": "Treatment / Medicine",
+        "tableHsn": "Code",
+        "tableQty": "Qty",
+        "tableRate": "Charges",
+        "tableTotal": "Amount",
+        "totalAmount": "Total Bill",
+        "amountInWords": "Received(in words):",
+        "declaration": "Get Well Soon!",
+        "bankDetails": "Bank Details:",
+        "authorizedSignatory": "Doctor / Admin"
+    }
+}

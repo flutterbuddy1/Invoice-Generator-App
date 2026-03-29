@@ -1,0 +1,42 @@
+{
+    "id": "consultant",
+    "name": "Consultant / Freelancer",
+    "description": "Minimalist invoice for professionals.",
+    "styles": {
+        "primaryColor": "263238",
+        "secondaryColor": "CFD8DC",
+        "textColor": "37474F",
+        "tableHeaderColor": "455A64",
+        "tableHeaderTextColor": "FFFFFF",
+        "tableSubHeaderColor": "CFD8DC",
+        "footerBackgroundColor": "ECEFF1",
+        "borderColor": "546E7A"
+    },
+    "features": {
+        "showTransportFields": false,
+        "showPaymentTerms": true,
+        "showCustomerGstin": true,
+        "showHsn": true,
+        "showGst": true,
+        "showDueDate": true
+    },
+    "labels": {
+        "title": "PROFESSIONAL INVOICE",
+        "businessDetails": "Consultant",
+        "consigneeDetailsTitle": "BILL TO",
+        "invoiceNo": "Invoice #",
+        "dated": "Issued",
+        "termsOfPayment": "Terms",
+        "dueDate": "Due Date",
+        "tableDescription": "Service Description",
+        "tableHsn": "SAC",
+        "tableQty": "Hrs/Qty",
+        "tableRate": "Rate",
+        "tableTotal": "Amount",
+        "totalAmount": "Total Due",
+        "amountInWords": "Total in words:",
+        "declaration": "Notes:",
+        "bankDetails": "Payment Info:",
+        "authorizedSignatory": "Signature"
+    }
+}
